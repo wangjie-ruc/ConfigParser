@@ -29,7 +29,6 @@ class ConfigDict(Dict):
 
 def add_args(parser, cfg, prefix=''):
     for k, v in cfg.items():
-        print(k,v)
         if isinstance(v, str):
             parser.add_argument('--' + prefix + k)
         elif isinstance(v, bool):

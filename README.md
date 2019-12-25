@@ -5,6 +5,19 @@
 
 code are copied and modified from [addict](https://github.com/mewwts/addict) and [mmcv](https://github.com/open-mmlab/mmcv)
 
+## install
+
+```
+pip install apcs
+
+```
+or 
+
+```
+git clone git@github.com:wangjie-ruc/apcs.git
+cd apcs
+python setup.py install
+```
 ## usage
 
 
