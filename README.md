@@ -1,4 +1,9 @@
-# ConfigParser
+# A python config system (APCS)
+
+
+## Notice
+
+code are copied and modified from [addict](https://github.com/mewwts/addict) and [mmcv](https://github.com/open-mmlab/mmcv)
 
 ## usage
 
@@ -17,7 +22,7 @@ model_kwargs = dict(num_classes=10, kwargs=dict(pretrained=False))
 ```python
 #  test/test1.py
 
-from ConfigParser import Config
+from apcs import Config
 
 def main():
     cfg = Config.fromfile('test/config.py')
@@ -34,7 +39,7 @@ if __name__ == '__main__':
 ```python
 # test/test2.py
 
-from ConfigParser import Config
+from apcs import Config
 
 def main():
     # the action of boolean variables is just reversing the default value
@@ -51,7 +56,3 @@ if __name__ == '__main__':
     main()
 
 ```
-
-## Notice
-
-code are copied and modified from addict and mmcv

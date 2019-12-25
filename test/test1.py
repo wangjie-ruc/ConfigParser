@@ -1,4 +1,4 @@
-from ConfigParser import Config
+from apcs import Config
 
 def main():
     cfg = Config.fromfile('test/config.py')
