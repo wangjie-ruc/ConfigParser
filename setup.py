@@ -9,7 +9,7 @@ setup(
     author='jie.wang',
     author_email='jie.wang@ruc.edu.cn',
     description='Configuration Toolkit',
-    url='https://github.com/wangjie-ruc/yacs',
+    url='https://github.com/wangjie-ruc/apcs',
     license='MIT',
     install_requires=install_requires
 )
