@@ -29,14 +29,18 @@ class ConfigDict(Dict):
 
 def add_args(parser, cfg, prefix=''):
     for k, v in cfg.items():
+        print(k,v)
         if isinstance(v, str):
             parser.add_argument('--' + prefix + k)
+        elif isinstance(v, bool):
+            if v:
+                parser.add_argument('--' + prefix + k, action='store_false')
+            else:
+                parser.add_argument('--' + prefix + k, action='store_true')
         elif isinstance(v, int):
             parser.add_argument('--' + prefix + k, type=int)
         elif isinstance(v, float):
             parser.add_argument('--' + prefix + k, type=float)
-        elif isinstance(v, bool):
-            parser.add_argument('--' + prefix + k, action='store_true')
         elif isinstance(v, dict):
             add_args(parser, v, prefix + k + '.')
         elif isinstance(v, Iterable):
@@ -145,7 +149,7 @@ class Config(object):
     def merge_from_options(self, opt):
         args = [v[2:] for v in sys.argv if v.startswith('--')]
         opt = {k: v for k, v in opt.__dict__.items() if k in args}
-        self.merge_from_dict()
+        self.merge_from_dict(opt)
 
     def merge_from_file(self):
         raise NotImplementedError

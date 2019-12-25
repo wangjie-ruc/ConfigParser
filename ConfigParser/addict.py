@@ -30,7 +30,11 @@ class Dict(dict):
             self[name] = value
 
     def __setitem__(self, name, value):
-        super(Dict, self).__setitem__(name, value)
+        if '.' in name:
+            items = name.split('.')
+            getattr(self, items[0])['.'.join(items[1:])] = value
+        else:
+            super(Dict, self).__setitem__(name, value)
         try:
             p = object.__getattribute__(self, '__parent')
             key = object.__getattribute__(self, '__key')
