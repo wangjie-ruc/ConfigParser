@@ -145,7 +145,7 @@ class Config(object):
         for k, v in cfg_dict.items():
             setattr(self, k, v)
 
-    def merge_from_options(self, opt):
+    def merge_from_args(self, opt):
         args = [v[2:] for v in sys.argv if v.startswith('--')]
         opt = {k: v for k, v in opt.__dict__.items() if k in args}
         self.merge_from_dict(opt)
