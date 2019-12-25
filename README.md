@@ -37,6 +37,9 @@ if __name__ == '__main__':
 from ConfigParser import Config
 
 def main():
+    # the action of boolean variables is just reversing the default value
+    # e.g. if pretrained is defined True in config file, 
+    # "store_false" is chosen for argparser action, and vice versa
     parser, cfg = Config.auto_argparser()
     args = parser.parse_args()
     cfg.merge_from_options(args)
