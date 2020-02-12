@@ -1,10 +1,14 @@
 # copy from https://github.com/open-mmlab/mmcv
 
+import ast
+import os
 import os.path as osp
 import sys
 from argparse import ArgumentParser
 from importlib import import_module
 from typing import Iterable
+
+import astunparse
 
 from .addict import Dict
 
@@ -27,6 +31,23 @@ class ConfigDict(Dict):
         raise ex
 
 
+def import_from_python(path, default_setting=None):
+    astree = ast.parse(open(path).read())
+    statements = [astunparse.unparse(e) for e in astree.body]
+    cfg = {}
+    for expr in statements:
+        t = cfg.copy()
+        exec(expr, t)
+        if  '__builtins__' in t:
+            del t['__builtins__']
+        if default_setting is not None:
+            key = (t.keys() - cfg.keys()).pop() 
+            if key in default_setting:
+                t = {key: default_setting.pop(key)}
+        cfg.update(t)
+    return cfg
+
+
 def add_args(parser, cfg, prefix=''):
     for k, v in cfg.items():
         if isinstance(v, str):
@@ -45,7 +66,7 @@ def add_args(parser, cfg, prefix=''):
         elif isinstance(v, Iterable):
             parser.add_argument('--' + prefix + k, type=type(v[0]), nargs='+')
         else:
-            print('connot parse key {} of type {}'.format(prefix + k, type(v)))
+            print('cannot parse key {} of type {}'.format(prefix + k, type(v)))
     return parser
 
 
@@ -76,25 +97,14 @@ class Config(object):
     """
 
     @staticmethod
-    def fromfile(filename):
+    def fromfile(filename, default_setting=None):
         filename = osp.abspath(osp.expanduser(filename))
         if not osp.isfile(filename):
             raise FileNotFoundError(
                 'file "{}" does not exist'.format(filename))
 
         if filename.endswith('.py'):
-            module_name = osp.basename(filename)[:-3]
-            if '.' in module_name:
-                raise ValueError('Dots are not allowed in config file path.')
-            config_dir = osp.dirname(filename)
-            sys.path.insert(0, config_dir)
-            mod = import_module(module_name)
-            sys.path.pop(0)
-            cfg_dict = {
-                name: value
-                for name, value in mod.__dict__.items()
-                if not name.startswith('__')
-            }
+            cfg_dict = import_from_python(filename, default_setting)
         elif filename.endswith(('.yml', '.yaml')):
             import yaml
             cfg_dict = yaml.load(open(filename))
@@ -145,10 +155,13 @@ class Config(object):
         for k, v in cfg_dict.items():
             setattr(self, k, v)
 
-    def merge_from_args(self, opt):
+    def merge_from_args(self, opt, lazy=False):
         args = [v[2:] for v in sys.argv if v.startswith('--')]
         opt = {k: v for k, v in opt.__dict__.items() if k in args}
-        self.merge_from_dict(opt)
+        if lazy is True:
+            self.fromfile(self.filename, opt)
+        else:
+            self.merge_from_dict(opt)
 
     def merge_from_file(self):
         raise NotImplementedError
