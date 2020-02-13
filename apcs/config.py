@@ -34,16 +34,21 @@ class ConfigDict(Dict):
 def import_from_python(path, default_setting=None):
     astree = ast.parse(open(path).read())
     statements = [astunparse.unparse(e) for e in astree.body]
-    cfg = {}
+    from collections import OrderedDict
+    cfg = Dict()
     for expr in statements:
-        t = cfg.copy()
+        t = cfg.to_dict()
+        # print(t)
         exec(expr, t)
+        t = Dict(t)
         if  '__builtins__' in t:
             del t['__builtins__']
+        # print(expr, t)
+        key = (t.keys() - cfg.keys()).pop()
+        cfg.update(t)
         if default_setting is not None:
-            key = (t.keys() - cfg.keys()).pop() 
             if key in default_setting:
-                t = {key: default_setting.pop(key)}
+                t = Dict({key: default_setting[key]})
         cfg.update(t)
     return cfg
 
@@ -152,14 +157,14 @@ class Config(object):
         return self._text
 
     def merge_from_dict(self, cfg_dict):
-        for k, v in cfg_dict.items():
-            setattr(self, k, v)
+        self._cfg_dict.update(cfg_dict)
 
     def merge_from_args(self, opt, lazy=False):
         args = [v[2:] for v in sys.argv if v.startswith('--')]
-        opt = {k: v for k, v in opt.__dict__.items() if k in args}
+        opt = Dict({k: v for k, v in opt.__dict__.items() if k in args})
         if lazy is True:
-            self.fromfile(self.filename, opt)
+            cfg = self.fromfile(self.filename, opt)
+            self._cfg_dict.update(cfg._cfg_dict)
         else:
             self.merge_from_dict(opt)
 

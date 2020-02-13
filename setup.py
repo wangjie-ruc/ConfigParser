@@ -4,7 +4,7 @@ install_requires=[]
 
 setup(
     name='apcs',
-    version='0.0.3',
+    version='0.0.5',
     packages=find_packages(exclude=('test',)),
     author='jie.wang',
     author_email='jie.wang@ruc.edu.cn',

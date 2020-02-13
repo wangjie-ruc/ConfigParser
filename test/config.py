@@ -1,7 +1,13 @@
 
-root = '/home/zhangsan/data'
+root = '/data/DomainNet'
 
-imagelist = f'{root}/coco/train.txt'
+domains = {'c':'clipart', 'r':'real', 's':'sketch'}
+
+source = 'c'
+target = 'r'
+
+source_train_list = f'{root}/ImageSets/{domains[source]}_train.txt'
+target_train_list = f'{root}/ImageSets/{domains[target]}_train.txt'
 
 batch_size = 32
 
